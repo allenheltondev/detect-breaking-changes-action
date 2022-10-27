@@ -1,0 +1,20 @@
+name: Detect Breaking Changes
+description: |
+  Loads the provided API spec and compares it to the same file on the main branch. Fails execution if any breaking changes are detected.
+input:
+  specFilename:
+    description: Relative path to the Open API Spec from the root
+    required: true
+  accessToken:
+    description: GitHub Personal Access Token used to load the spec from the main branch
+    required: true
+  format:
+    description: Specifies the format of the Open API Spec. Accepts 'yaml' or 'json'
+    required: false
+    default: json
+  breakingChangeTypes:
+    description: List of all breaking change types to detect. If nothing is provided, all types will be used.
+    required: false
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
