@@ -50064,7 +50064,7 @@ async function run() {
   const format = core.getInput('format', { required: false });
 
   const previousSpec = await loadSpecFromMainBranch(
-    core.getInput('access_token', { required: true }),
+    core.getInput('accessToken', { required: true }),
     fileName,
     format
   );
