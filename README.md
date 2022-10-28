@@ -27,6 +27,8 @@ with:
   accessToken: <PAT from GitHub>
 ```
 
+*NOTE - It is recommended to keep your Personal Access Token as a secret in your repository*
+
 ### Inputs
 
 * `specFilename` - *Required* - Relative path to the Open API Spec from the root
