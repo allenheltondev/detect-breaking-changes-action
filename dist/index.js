@@ -50092,6 +50092,8 @@ async function run() {
     core.setOutput('breaking-changes-detected', false);
   }
 }
+
+run();
 })();
 
 module.exports = __webpack_exports__;

@@ -36,3 +36,5 @@ async function run() {
     core.setOutput('breaking-changes-detected', false);
   }
 }
+
+run();
