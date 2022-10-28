@@ -7,7 +7,7 @@ This GitHub action is used in your CI pipeline to detect breaking changes in an 
 ## Usage
 
 ```yaml
-uses: actions/detect-breaking-changes-action@latest
+uses: allenheltondev/detect-breaking-changes-action@v1
 with:
   specFileName: spec/openapi.yaml
   accessToken: <PAT from GitHub>
@@ -21,7 +21,7 @@ with:
 Or minimally
 
 ```yaml
-uses: actions/detect-breaking-changes-action@v1
+uses: allenheltondev/detect-breaking-changes-action@v1
 with:
   specFileName: oas.json
   accessToken: <PAT from GitHub>
