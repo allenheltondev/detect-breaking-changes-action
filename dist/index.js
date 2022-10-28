@@ -49826,7 +49826,7 @@ exports.loadSpecFromMainBranch = async (authToken, fileName, format) => {
     const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
-      path: fileName.replace('.', '').replace(/^\/+/, '')
+      path: fileName.replace(/^\./, '').replace(/^\/+/, '')
     });
 
     const buffer = Buffer.from(response.data.content, 'base64');
