@@ -1,0 +1,749 @@
+openapi: 3.0.0
+info:
+  title: Gopher Holes Unlimited API!
+  description: |
+    Gopher Holes Unlimited (GHU) is a fictional website to track gophers, holes, and our continuous quest to keep them from destroying our gardens.
+
+    This API is designed to help illustrate the capabilities of OAS3.0 in a fun and meaningful way.
+
+    ![Gopher Holes Unlimited](https://readysetcloud.s3.amazonaws.com/GHU.png)
+  version: 1.0.0
+tags:
+  - name: Gophers
+    description: The little varmints themselves
+  - name: Holes
+    description: Details on the gopher holes
+
+security:
+  - api_key: []
+
+paths:
+  /gophers:
+    post:
+      summary: Track a new gopher
+      description: When you find a new gopher, add it to the list with this endpoint. Keeping track of gophers helps the community know where they are and where not to plant their garden.
+      tags:
+        - Gophers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Gopher'
+      responses:
+        202:
+          $ref: '#/components/responses/Accepted'
+        400:
+          $ref: '#/components/responses/BadRequest'      
+    get:
+      summary: View a list of all gophers
+      description: Use this endpoint to view a list of all gophers in the system
+      tags:
+        - Gophers
+      responses:
+        200:
+          description: The request was successful and a list of gophers was returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GopherSummary'
+
+  /gophers/{gopherId}/statuses:
+    parameters:
+      - $ref: '#/components/parameters/gopherId'
+    post:
+      summary: Add a new status to a specific gopher
+      description: Sets a the current status of a gopher. All status history is maintained
+      tags:
+        - Gophers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  minLength: 1
+                  description: Current status of the gopher
+                  enum: [at large, trapped, deceased, unknown]
+                  example: trapped
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+      
+  /gophers/{gopherId}:
+    parameters:
+      - $ref: '#/components/parameters/gopherId'
+    patch:
+      summary: Update a subset of details of a specific gopher
+      description: If updates are necessary to the gopher, provide only the details that have changed
+      tags:
+        - Gophers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGopher'
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+    get:
+      parameters:
+        - name: include
+          in: query
+          description: |
+            Denotes what additional information to include in the response. Currently allows: *holes*
+          required: false
+          schema:
+            type: string
+            example: holes
+
+      summary: Get the details of a specific gopher
+      description: To view additional details about a gopher, look them up by their id
+      tags:
+        - Gophers
+      responses:
+        200:
+          description: The requested gopher has been found and the details returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gopher'
+        400:
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete a gopher
+      description: Deletes a gopher and all statuses from the system
+      tags:
+        - Gophers
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+
+  /jobs/gophers/{gopherId}:
+    parameters:
+      - $ref: '#/components/parameters/gopherId'
+    get:
+      summary: View the details of a job that creates a gopher
+      description: Get the status of an "Add Gopher" job
+      tags:
+        - Jobs
+      responses:
+        200:
+          description: The request was successful and the job detail was returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddGopherJobDetail'
+
+  /holes:
+    post:
+      summary: Track a new hole
+      description: When you find a new gopher hole, add it into the system via this endpoint
+      tags:
+        - Holes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hole'
+      responses:
+        201:
+          $ref: '#/components/responses/Created'
+        400:
+          $ref: '#/components/responses/BadRequest'
+    get:
+      summary: View a list of all holes
+      description: To view a list of all the gopher holes, use this endpoint. Returns all holes by default, but has an optional query parameter to filter by status
+      parameters:
+        - in: query
+          name: status
+          required: false
+          description: Filter holes by their current status
+          example: filled
+          schema:
+            type: string
+      tags:
+        - Holes
+      responses:
+        200:
+          description: The list of holes was returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HoleSummary'
+
+  /holes/{holeId}/statuses:
+    parameters:
+      - $ref: '#/components/parameters/holeId'
+    post:
+      summary: Update the gopher hole status
+      description: When the status of the gopher hole changes, i.e. filled, post to the this endpoint to update the hole.
+      tags:
+        - Holes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  minLength: 1
+                  enum: [filled, visible]
+                  description: New status of the gopher hole
+                  example: filled
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+
+  /holes/{holeId}:
+    parameters:
+      - $ref: '#/components/parameters/holeId'
+    put:
+      summary: Update the details of a specific hole
+      description: If updates are necessary to the hole, pass in all the details and replace the entity entirely.
+      tags:
+        - Holes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hole'
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Update some of the details of a specific hole
+      description: Will update only the provided details of the whole
+      tags:
+        - Holes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HolePatch'
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+    get:
+      summary: Get the details of a specific hole
+      description: To view additional details about a hole, look it up by id.
+      tags:
+        - Holes
+      responses:
+        200:
+          description: The requested hole has been found and the details returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hole'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: x-api-key
+      in: header
+
+  parameters:
+    gopherId:
+      name: gopherId
+      in: path
+      description: Unique identifier for a gopher
+      required: true
+      schema:
+        type: string
+        example: kfghusfdglksgu858y
+    holeId:
+      name: holeId
+      in: path
+      description: Unique identifier for a hole
+      required: true
+      schema:
+        type: string
+        example: dhr558QRdvSoBkM9JcLFSK
+  schemas:
+    Gopher:
+      description: All information describing a gopher
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the gopher
+          example: 8dqNfMQaR4VfHxsizLJyCx
+        name:
+          type: string
+          minLength: 1
+          description: The name of the gopher given by the hunter who submitted it
+          example: Gerry
+        type:
+          type: string
+          enum: [Western Pocket, Eastern Pocket, Geomys]
+          description: What kind of gopher is this?
+          example: Western Pocket
+        sex:
+          type: string
+          enum: [male, female, no preference, unknown]
+          description: Sex of the gopher
+          example: male
+        picture:
+          type: string
+          minLength: 1
+          description: Url of a recent photo
+          example: https://gopherhunter.s3.amazonaws.com/gerry.jpg
+        timesSeen:
+          type: number
+          description: How many times has this gopher been spotted
+          example: 42
+        status:
+          type: string
+          description: Current status of the gopher
+          enum: [at large, trapped, deceased, unknown]
+          example: at large
+        color:
+          type: string
+          description: Color of the Gopher's fur
+          example: brown
+        location:
+          $ref: '#/components/schemas/Location'
+        comment:
+          type: string
+          description: Text comment with any additional details
+          example: He keeps eating the carrots from my garden. So annoying!!
+        knownAssociates:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+            properties:
+              id:
+                type: string
+                minLength: 1
+                description: Unique identifier of the gopher
+                example: 5Fe3ZQqqEcurytZdK69iew
+              name:
+                type: string
+                minLength: 1
+                description: Name of the associated gopher
+                example: Carla
+
+    UpdateGopher:
+      description: All information describing a gopher
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: The name of the gopher given by the hunter who submitted it
+          example: Gerry
+        type:
+          type: string
+          enum: [Western Pocket, Eastern Pocket, Geomys]
+          description: What kind of gopher is this?
+          example: Western Pocket
+        sex:
+          type: string
+          enum: [male, female, no preference, unknown]
+          description: Sex of the gopher
+          example: male
+        picture:
+          type: string
+          minLength: 1
+          description: Url of a recent photo
+          example: https://gopherhunter.s3.amazonaws.com/gerry.jpg
+        status:
+          type: string
+          description: Current status of the gopher
+          enum: [at large, trapped, deceased, unknown]
+          example: at large
+        color:
+          type: string
+          description: Color of the Gopher's fur
+          example: brown
+        location:
+          $ref: '#/components/schemas/Location'
+        comment:
+          type: string
+          description: Text comment with any additional details
+          example: He keeps eating the carrots from my garden. So annoying!!
+
+    Location:
+      description: Where it is located
+      oneOf:
+        - type: object
+          required:
+            - latitude
+            - longitude
+          properties:
+            latitude:
+              type: string
+              minLength: 1
+              description: Latitude location of the known whereabouts
+              example: '33.067067'
+            longitude:
+              type: string
+              minLength: 1
+              description: Longitude location of the known whereabouts
+              example: '-96.801599'
+        - type: object
+          required:
+            - city
+            - state
+          properties:
+            addressLine1:
+              type: string
+              description: Line 1 of the address of the known whereabouts
+              example: 123 Main Street
+            addressLine 2:
+              type: string
+              description: Line 2 of the address of the known whereabouts
+              example: 'Apt #2212'
+            city:
+              type: string
+              minLength: 1
+              description: City of the known whereabouts
+              example: Plano
+            state:
+              type: string
+              minLength: 1
+              description: State of the known whereabouts
+              example: TX
+      example:
+        latitude: '33.067067'
+        longitude: '-96.801599'
+
+    GopherSummary:
+      description: High level information about a gopher
+      type: array
+      items:
+        type: object
+        required:
+          - id
+          - name
+        properties:
+          id:
+            type: string
+            minLength: 1
+            description: Unique identifier of the gopher
+            example: igdLLki4no9ey1aN2rAB3s
+          name:
+            type: string
+            minLength: 1
+            description: The name of the gopher given by the hunter who submitted it
+            example: Gerry
+          type:
+            type: string
+            enum: [Western Pocket, Eastern Pocket, Geomys]
+            description: What kind of gopher is this?
+            example: Western Pocket
+          location:
+            type: object
+            description: Known location of the gopher
+            oneOf:
+              - type: object
+                required:
+                  - latitude
+                  - longitude
+                properties:
+                  latitude:
+                    type: string
+                    minLength: 1
+                    description: Latitude location of the gopher's whereabouts
+                    example: '33.067067'
+                  longitude:
+                    type: string
+                    minLength: 1
+                    description: Longitude location of the gopher's whereabouts
+                    example: '-96.801599'
+              - type: object
+                required:
+                  - city
+                  - state
+                  - addressLine1
+                properties:
+                  addressLine1:
+                    type: string
+                    description: Line 1 of the address of the known whereabouts
+                    example: 123 Main Street
+                  addressLine 2:
+                    type: string
+                    description: Line 2 of the address of the known whereabouts
+                    example: 'Apt #2212'
+                  city:
+                    type: string
+                    minLength: 1
+                    description: City of the known whereabouts
+                    example: Plano
+                  state:
+                    type: string
+                    minLength: 1
+                    description: State of the known whereabouts
+                    example: TX
+            example:
+              latitude: '33.067067'
+              longitude: '-96.801599'
+
+    Hole:
+      description: Full detailed information about a gopher hole
+      type: object
+      required:
+        - location
+        - description
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the hole
+          example: koktdBhckCtYTsHbvnXrqr
+        description:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Brief description about the hole
+          example: Near the fire hydrant
+        gopherId:
+          type: string
+          description: The gopher who dug the hole
+          example: igdLLki4no9ey1aN2rAB3s
+        location:
+          $ref: '#/components/schemas/Location'
+        status:
+          type: string
+          enum: [filled, visible]
+          description: Current status of the hole
+          example: filled
+        comment:
+          type: string
+          description: The hole comment
+          example: This one is huge! I stepped right in it!
+
+    HolePatch:
+      description: Details of a gopher hole
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Brief description about the hole
+          example: Near the fire hydrant
+        gopherId:
+          type: string
+          description: The gopher who dug the hole
+          example: igdLLki4no9ey1aN2rAB3s
+        location:
+          $ref: '#/components/schemas/Location'
+        status:
+          type: string
+          enum: [filled, visible]
+          description: Current status of the hole
+          example: filled
+        comment:
+          type: string
+          description: The hole comment
+          example: This one is huge! I stepped right in it!
+
+    HoleSummary:
+      description: High level information about a gopher hole
+      type: array
+      items:
+        type: object
+        required:
+          - id
+          - location
+          - description
+        properties:
+          id:
+            type: string
+            minLength: 1
+            description: Unique identifier for the hole
+            example: koktdBhckCtYTsHbvnXrqr
+          location:
+            type: object
+            description: Known location of the gopher
+            required:
+              - latitude
+              - longitude
+            properties:
+              latitude:
+                type: string
+                minLength: 1
+                description: Latitude location of the hole
+                example: '33.067067'
+              longitude:
+                type: string
+                minLength: 1
+                description: Longitude location of the hole
+                example: '-96.801599'
+          description:
+            type: string
+            minLength: 1
+            maxLength: 100
+            description: Brief description about the hole
+            example: Near the fire hydrant
+          gopherId:
+            type: string
+            description: Unique identifier of the gopher that dug the hole
+            example: lag91345wgli154098dghb908
+
+    AddGopherJobDetail:
+      type: object
+      required:
+        - status
+        - id
+        - createdDate
+        - input
+      properties:
+        status:
+          type: string
+          enum: [Pending, In Progress, Succeeded, Failed]
+          description: Current status of the add gopher job
+          example: Pending
+        id:
+          type: string
+          description: Unique identifier of the job. Also will be the id of the gopher if the job succeeds
+          example: 823krg81234sdg34134
+        createdDate:
+          type: string
+          format: date-time
+          description: Date and time the job was created
+          example: '2022-03-22T12:10:33.932Z'
+        input:
+          $ref: '#/components/schemas/Gopher'
+        result:
+          type: object
+          required:
+            - gopherId
+            - linkedHoles
+          properties:
+            gopherId:
+              type: string
+              description: Unique identifier of the created gopher
+              example: idfg63249234hf76
+            linkedHoles:
+              type: integer
+              description: The number of existing holes that were automatically linked to the created gopher
+              example: 2
+        error:
+          type: string
+          description: Detail about the error that occurred while running the job
+          example: Something went wrong
+
+  responses:
+    Accepted:
+      description: The request was recieved and is being processed
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: Unique identifier to track progress
+                example: iysgsfdgk347gnsfgG73
+              links:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - method
+                    - url
+                  properties:
+                    method:
+                      type: string
+                      description: HTTP method to use when calling the link
+                      example: GET
+                    url:
+                      type: string
+                      description: Endpoint to call
+                      example: https://api.gopherholesunlimited.com/jobs/gophers/123
+    Created:
+      description: Successfully added into the system
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: The identifier for the new entity
+                example: igdLLki4no9ey1aN2rAB3s
+    BadRequest:
+      description: Unable to process request. Likely due to improperly formatted request.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                description: Message detailing what went wrong
+                example: The 'name' field is required and is missing.
+    NotFound:
+      description: Unable to find entity with a given identifier
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                description: Message stating the entity was not found
+                example: Unable to find entity with the provided id
+    UnknownError:
+      description: An unexpected error occurred on the server.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                description: Unknown error message
+                example: An unexpected error occurred.
+    NoContent:
+      description: A blank response is returned indicating success
