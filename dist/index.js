@@ -49416,7 +49416,7 @@ var detector;
 
 exports.detectBreakingChanges = (previousSpec, newSpec, configuredTypes) => {
   detector = new BreakingChanges(configuredTypes);
-  core.info(`Detecting the following breaking change types: ${detector.breakingChangeTypes.join('\r\n')}`);
+  core.info(`Detecting the following breaking change types: ${detector.breakingChangeTypes.map(bct => bct.name).join(',')}`);
   validatePaths(previousSpec, newSpec);
   validateSchemas(previousSpec, newSpec);
 
@@ -50083,8 +50083,7 @@ async function run() {
   const breakingChangeTypes = core.getMultilineInput('breakingChangeTypes', { required: false });
   const breakingChanges = detectBreakingChanges(previousSpec, newSpec, breakingChangeTypes);
   if (breakingChanges?.length) {
-    const failureMessage = `Found breaking changes:\r\n ${breakingChanges.map((bc) => `${bc.type} ${bc.description}`).join('\r\n')}`; 
-    core.error('breaking-changes', failureMessage);
+    const failureMessage = `Found breaking changes:\r\n ${breakingChanges.map((bc) => `${bc.type}: ${bc.message}`).join('\r\n')}`; 
     core.setOutput('breaking-changes-detected', true);
     core.setFailed(failureMessage);
   } else {
