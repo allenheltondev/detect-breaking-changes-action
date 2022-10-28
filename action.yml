@@ -1,6 +1,8 @@
 name: Detect Breaking Changes
 description: |
-  Loads the provided API spec and compares it to the same file on the main branch. Fails execution if any breaking changes are detected.
+  Loads the provided API spec and compares it to the same file on the main branch.
+icon: link
+color: red
 inputs:
   specFilename:
     description: Relative path to the Open API Spec from the root
