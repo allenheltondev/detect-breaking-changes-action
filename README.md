@@ -12,10 +12,10 @@ with:
   specFileName: spec/openapi.yaml
   accessToken: <PAT from GitHub>
   format: yaml
-  breakingChangeTypes:
-    - removed-paths
-    - schema-properties-removed
-    - parameters-removed
+  breakingChangeTypes: |
+    removed-paths
+    schema-properties-removed
+    parameters-removed
 ```
 
 Or minimally

@@ -6,7 +6,7 @@ var detector;
 
 exports.detectBreakingChanges = (previousSpec, newSpec, configuredTypes) => {
   detector = new BreakingChanges(configuredTypes);
-  core.info(`Detecting the following breaking change types:\r\n ${detector.breakingChangeTypes.map(bct => bct.name).join('\r\n')}`);
+  core.info(`Detecting the following breaking change types:\r\n ${detector.breakingChangeTypes.map(bct => bct.name).join('\r\n ')}`);
   validatePaths(previousSpec, newSpec);
   validateSchemas(previousSpec, newSpec);
 
