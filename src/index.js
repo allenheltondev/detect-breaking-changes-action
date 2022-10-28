@@ -32,6 +32,7 @@ async function run() {
     core.setOutput('breaking-changes-detected', true);
     core.setFailed(failureMessage);
   } else {
+    core.info('No breaking changes found');
     core.setOutput('breaking-changes-detected', false);
   }
 }

@@ -49410,11 +49410,13 @@ try {
 
 
 const _ = __nccwpck_require__(250);
+const core = __nccwpck_require__(2186);
 const { BreakingChanges } = __nccwpck_require__(8778);
 var detector;
 
 exports.detectBreakingChanges = (previousSpec, newSpec, configuredTypes) => {
   detector = new BreakingChanges(configuredTypes);
+  core.info(`Detecting the following breaking change types: ${detector.breakingChangeTypes.join('\r\n')}`);
   validatePaths(previousSpec, newSpec);
   validateSchemas(previousSpec, newSpec);
 
@@ -50086,6 +50088,7 @@ async function run() {
     core.setOutput('breaking-changes-detected', true);
     core.setFailed(failureMessage);
   } else {
+    core.info('No breaking changes found');
     core.setOutput('breaking-changes-detected', false);
   }
 }

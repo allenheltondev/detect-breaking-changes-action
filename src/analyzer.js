@@ -1,10 +1,12 @@
 
 const _ = require('lodash');
+const core = require('@actions/core');
 const { BreakingChanges } = require('./breaking-changes');
 var detector;
 
 exports.detectBreakingChanges = (previousSpec, newSpec, configuredTypes) => {
   detector = new BreakingChanges(configuredTypes);
+  core.info(`Detecting the following breaking change types: ${detector.breakingChangeTypes.join('\r\n')}`);
   validatePaths(previousSpec, newSpec);
   validateSchemas(previousSpec, newSpec);
 
