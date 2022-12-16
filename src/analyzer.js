@@ -155,7 +155,7 @@ function compareSchemas(description, existingSchema, existingSchemaRef, newSchem
             compareSchemas(description, existingSchema, previousChild, newSchema, currentChild);
           }
           else if (property.type && ['string', 'number', 'integer', 'boolean'].includes(property.type)) {
-            if (!property.type === currentSchemaProperty.type) {
+            if (property.type !== currentSchemaProperty.type) {
               mutatedProperties.push(propertyName);
             }
           }
