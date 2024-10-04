@@ -16,7 +16,7 @@ inputs:
     description: List of all breaking change types to detect. If nothing is provided, all types will be used.
     required: false
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: link
