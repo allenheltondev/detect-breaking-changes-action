@@ -9,7 +9,7 @@ This GitHub action is used in your CI pipeline to detect breaking changes in an 
 ```yaml
 uses: allenheltondev/detect-breaking-changes-action@v1
 with:
-  specFileName: spec/openapi.yaml
+  specFilename: spec/openapi.yaml
   accessToken: <PAT from GitHub>
   format: yaml
   breakingChangeTypes: |
@@ -23,7 +23,7 @@ Or minimally
 ```yaml
 uses: allenheltondev/detect-breaking-changes-action@v1
 with:
-  specFileName: oas.json
+  specFilename: oas.json
   accessToken: <PAT from GitHub>
 ```
 
